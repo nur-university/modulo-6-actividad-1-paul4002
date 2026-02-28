@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: api-gateway
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
+  
+  cloud:
+    gateway:
+      routes:
+        - id: users-route
+          uri: https://jsonplaceholder.typicode.com
+          predicates:
+            - Path=/api/users
+          filters:
+            - RewritePath=/api/users, /users
+
+        - id: posts-route
+          uri: https://jsonplaceholder.typicode.com
+          predicates:
+            - Path=/api/posts
+          filters:
+            - RewritePath=/api/posts, /posts
+        
+
+keycloak:
+  server-url: ${KEYCLOAK_BASE_URL}
+  realm: ${KEYCLOAK_REALM}
+  client-id: ${KEYCLOAK_CLIENT_ID}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET}
